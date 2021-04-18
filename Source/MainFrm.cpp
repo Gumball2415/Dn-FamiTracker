@@ -1598,8 +1598,10 @@ void CMainFrame::OnUpdateSBInstrument(CCmdUI *pCmdUI)
 	CString String;
 	String.Format(_T("%02X"), GetSelectedInstrument());		// // //
 	unsigned int Split = static_cast<CFamiTrackerView*>(GetActiveView())->GetSplitInstrument();
-	if (Split != MAX_INSTRUMENTS)
-		String.Format(_T("%02X / %s"), Split, String);
+	if (Split != MAX_INSTRUMENTS) {
+		CString Orig = String;
+		String.Format(_T("%02X / %s"), Split, Orig);
+	}
 	CString msg;
 	AfxFormatString1(msg, ID_INDICATOR_INSTRUMENT, String);
 	pCmdUI->Enable(); 
