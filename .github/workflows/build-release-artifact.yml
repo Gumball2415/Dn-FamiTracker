@@ -1,7 +1,7 @@
 name: build-artifact-publish
 on:
   release:
-  types: [published]
+    types: [published]
 jobs:
   build-matrix-publish:
     runs-on: windows-2022
