@@ -23,6 +23,10 @@ jobs:
       - name: Set commit hash variable
         shell: powershell
         run: echo "commithash=$(git describe --tags)" >> $env:GITHUB_ENV
+      - name: Install Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.1.5" # Latest version of Lua for Windows
       - name: Build program
         shell: cmd
         run: |
