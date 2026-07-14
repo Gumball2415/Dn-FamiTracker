@@ -6,7 +6,6 @@ on:
 env:
   commithash: ""
   cc65_path: ${{ github.workspace }}\opt\cc65
-  # Fix cc65 segfault on 64-bit LLP64 Windows builds #1694
   cc65_ref: 547d923588d870aacf0b0016c67d0f6a92a70f83
 jobs:
   build-cc65:
@@ -18,6 +17,7 @@ jobs:
         submodules: "recursive"
         fetch-depth: 0
     - uses: ./.github/actions/cache_cc65
+      id: cc65cache
       with:
         cc65Path: ${{ env.cc65_path }}
         cc65Ref: ${{ env.cc65_ref }}
