@@ -27,7 +27,7 @@ runs:
     id: cache_cc65
     with:
       path: ${{ env.cc65_path }}
-      key: ${{ runner.os }}-cc65-${{ env.cc65_ref }}-${{ hashFiles('.github/actions/cache_cc65/*') }}
+      key: ${{ env.cc65-cache-key }}
       fail-on-cache-miss: true
   - name: Set CC65 PATH
     run: echo "${{ env.cc65_path }}\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
@@ -38,6 +38,6 @@ runs:
       msbuild-architecture: x64
   - name: Build program
     run: |
-      call msbuild -m -nologo -p:Configuration="${{ inputs.configuration }}" -p:Platform="${{ inputs.platform }}"
+      call msbuild -m -mt -nologo -p:Configuration="${{ inputs.configuration }}" -p:Platform="${{ inputs.platform }}"
       if %ERRORLEVEL%==1 exit %ERRORLEVEL%
     shell: cmd

@@ -9,6 +9,8 @@ env:
   cc65_ref: 547d923588d870aacf0b0016c67d0f6a92a70f83
 jobs:
   build-cc65:
+    outputs:
+      cc65-cache-key: ${{ steps.cc65cache.outputs.cc65-cache-key }}
     runs-on: windows-latest
     steps:
       # pull repo just to get the .yml files
@@ -36,6 +38,8 @@ jobs:
     - run: powershell -Command "echo "commithash=$(git describe --tags)" >> $env:GITHUB_ENV"
     - name: Build program
       uses: ./.github/actions/build_matrix
+      env:
+        cc65-cache-key: ${{ needs.build-cc65.outputs.cc65-cache-key }}
       with:
         platform: "${{ matrix.platform }}"
         configuration: "Release"

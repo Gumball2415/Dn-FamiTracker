@@ -9,39 +9,49 @@ inputs:
     description: "CC65 path to cache"
     required: false
     default: ${{ github.workspace }}\opt\cc65
+outputs:
+  cc65-cache-key:
+    description: "CC65 cache key saved"
+    value: ${{ steps.save-cache-key.outputs.cc65-cache-key }}
 runs:
   using: "composite"
   steps:
-      - name: Restore cache
-        uses: actions/cache/restore@main
-        id: cache_cc65
-        with:
-          path: ${{ inputs.cc65Path }}
-          key: ${{ runner.os }}-cc65-${{ inputs.cc65Ref }}-${{ hashFiles('.github/actions/cache_cc65/*') }}
-          restore-keys: ${{ runner.os }}-cc65-${{ inputs.cc65Ref }}-
+    - name: Restore cache
+      uses: actions/cache/restore@main
+      id: cache_cc65
+      with:
+        path: ${{ inputs.cc65Path }}
+        key: ${{ runner.os }}-cc65-${{ inputs.cc65Ref }}-${{ hashFiles('.github/actions/cache_cc65/*') }}
+        restore-keys: ${{ runner.os }}-cc65-${{ inputs.cc65Ref }}-
 
-      - name: Checkout CC65
-        uses: actions/checkout@main
-        if: steps.cache_cc65.outputs.cache-hit != 'true'
-        with:
-          repository: cc65/cc65
-          ref: ${{ inputs.cc65Ref }}
-          path: ${{ inputs.cc65Path }}
+    - name: Checkout CC65
+      uses: actions/checkout@main
+      if: steps.cache_cc65.outputs.cache-hit != 'true'
+      with:
+        repository: cc65/cc65
+        ref: ${{ inputs.cc65Ref }}
+        path: ${{ inputs.cc65Path }}
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@main
-        if: steps.cache_cc65.outputs.cache-hit != 'true'
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@main
+      if: steps.cache_cc65.outputs.cache-hit != 'true'
 
-      - name: Build CC65
-        if: steps.cache_cc65.outputs.cache-hit != 'true'
-        run: |
-          cd ${{ inputs.cc65Path }}
-          msbuild -m -mt src\cc65.sln -t:rebuild -p:Configuration=Release -p:Platform=x64
-        shell: cmd
+    - name: Build CC65
+      if: steps.cache_cc65.outputs.cache-hit != 'true'
+      run: |
+        cd ${{ inputs.cc65Path }}
+        msbuild -m -mt src\cc65.sln -t:rebuild -p:Configuration=Release -p:Platform=x64
+      shell: cmd
 
-      - name: Save cache
-        uses: actions/cache/save@main
-        if: steps.cache_cc65.outputs.cache-hit != 'true'
-        with:
-          path: ${{ inputs.cc65Path }}
-          key: ${{ runner.os }}-cc65-${{ inputs.cc65Ref }}-${{ hashFiles('.github/actions/cache_cc65/*') }}\
+    - name: Save cache
+      uses: actions/cache/save@main
+      if: steps.cache_cc65.outputs.cache-hit != 'true'
+      with:
+        path: ${{ inputs.cc65Path }}
+        key: ${{ runner.os }}-cc65-${{ inputs.cc65Ref }}-${{ hashFiles('.github/actions/cache_cc65/*') }}
+
+    - name: Save cache key
+      id: save-cache-key
+      run: echo "cc65-cache-key=${{ runner.os }}-cc65-${{ inputs.cc65Ref }}-${{ hashFiles('.github/actions/cache_cc65/*') }}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      shell: powershell
+
